@@ -1,4 +1,4 @@
-# NLP-Based Literature Review and Summarization
+# SummarAIze
 
 ## Overview
 Conducting comprehensive literature reviews is essential but time-consuming for researchers. This project explores the application of Natural Language Processing (NLP) to automate literature review and summarization. By training a model on a corpus of scientific papers, we develop techniques for extracting key information and generating concise summaries. The system identifies relevant studies, methodologies, and findings, streamlining the literature review process and supporting researchers in staying updated with the latest developments. 
