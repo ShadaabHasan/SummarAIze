@@ -2,38 +2,40 @@
 
 A simple tool that turns a long piece of text, such as part of a research paper, into a short summary.
 
-It uses **BART** (`facebook/bart-large-cnn`), a pre-trained summarisation model from Hugging Face. You paste in a paragraph, and the tool returns a summary of 50–150 words.
+It uses **BART** (`facebook/bart-large-cnn`), a pre-trained summarisation model from Hugging Face. You paste in a paragraph, and the tool returns a summary of 50–150 tokens.
 
 ## How it works
 
-1. **Clean the text:** NLTK removes stop words and punctuation, and spaCy reduces words to their base form (lemmatisation).
-2. **Summarise:** the cleaned text is passed to the BART summarisation pipeline from Hugging Face Transformers.
-3. **Show the result:** the summary is printed below the input.
+1. **Tokenise:** the text is turned into tokens with BART's tokenizer. Text longer than BART's limit (1,024 tokens) is cut to fit.
+2. **Generate:** BART writes the summary using beam search (4 beams), which compares several possible summaries and keeps the best one.
+3. **Decode:** the summary tokens are turned back into text and printed.
+
+The model is loaded directly with `AutoModelForSeq2SeqLM`, instead of the `summarization` pipeline, which was removed in Transformers version 5.
+
+### A design choice
+
+An earlier version removed stop words and lemmatised the text before summarising. This was removed, because BART was trained on normal sentences and writes better summaries from them. Removing words like "not" could also change the meaning of the text.
 
 ## Tech stack
 
 - Python
-- Hugging Face Transformers (BART, running on PyTorch)
-- NLTK and spaCy for text cleaning
+- Hugging Face Transformers (BART)
+- PyTorch
 
 ## How to run
 
-1. Open `NLP_Mini_Project.ipynb` in Jupyter or Google Colab.
-2. Run the first cell to install the packages:
-   `transformers`, `torch`, `nltk`, `spacy`
-3. Download the spaCy English model if needed:
-   `python -m spacy download en_core_web_sm`
-4. Run the second cell, then paste in the text you want to summarise.
+1. Open `NLP_Mini_Project.ipynb` in Google Colab (a GPU runtime is faster, but not required).
+2. Run the first cell to install the packages.
+3. Run the second cell, then paste in the text you want to summarise.
 
 ## Limitations
 
-- BART can only read about **1,024 tokens** at once. Longer text is cut off, so very long papers need to be split into parts first.
+- BART can only read about **1,024 tokens** at once. Longer text is cut off, so only the start of a long paper is summarised.
 - The model is used **as it is**. It was not trained or fine-tuned in this project.
-- Removing stop words before summarising can make the summaries less fluent, because BART was trained on normal sentences.
 - There is no automatic quality score (such as ROUGE) yet.
 
 ## Ideas for the future
 
-- Split long documents into chunks and summarise each part.
-- Compare summaries with and without the text cleaning step, using ROUGE scores.
+- Split long documents into chunks, summarise each part, then combine them.
+- Measure summary quality with ROUGE scores.
 - Add a simple web interface.
